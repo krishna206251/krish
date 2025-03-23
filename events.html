@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Events & Calendar</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+    <div class="flex">
+        <!-- Sidebar -->
+        <aside class="w-64 bg-white shadow-md h-screen p-5">
+            <h1 class="text-xl font-bold flex items-center space-x-2">
+                <span>🎓 Educo</span>
+            </h1>
+            <nav class="mt-5">
+                <ul>
+                    <li class="p-2"><a href="home.html">Dashboard</a></li>
+                    <li class="p-2"><a href="students.html">Students Management</a></li>
+                    <li class="p-2"><a href="teachers.html">Teachers Management</a></li>
+                    <li class="p-2 bg-blue-500 text-white rounded-md"><a href="events.html">Events & Calendar</a></li>
+                    <li class="p-2"><a href="analytics.html">Analytics & Reports</a></li>
+                    <li class="p-2"><a href="help.html">Help Center</a></li>
+                    <li class="p-2"><a href="settings.html">Settings</a></li>
+                    <li class="p-2"><a href="logout.html">Logout</a></li>
+                </ul>
+            </nav>
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="flex-1 p-5">
+            <header class="flex justify-between items-center">
+                <h2 class="text-lg font-semibold">Events & Calendar</h2>
+                <button class="bg-blue-500 text-white px-4 py-2 rounded-md" id="addEventBtn">Add Event</button>
+            </header>
+
+            <!-- Search Bar -->
+            <section class="mt-5">
+                <input type="text" id="searchInput" class="p-2 w-full border rounded-md" placeholder="Search Events" />
+            </section>
+            
+            <!-- Upcoming Events Section -->
+            <section class="mt-5 bg-white shadow-md p-5 rounded-md">
+                <h3 class="text-gray-600 mb-3">Upcoming Events</h3>
+                <ul id="eventsList">
+                    <li class="event-item">📅 School annual sports day - 20 July 2023
+                        <button class="bg-yellow-500 text-white px-2 py-1 text-xs rounded-md edit-btn">Edit</button>
+                        <button class="bg-red-500 text-white px-2 py-1 text-xs rounded-md delete-btn">Delete</button>
+                    </li>
+                    <li class="event-item">📅 Annual function - 5 July 2023
+                        <button class="bg-yellow-500 text-white px-2 py-1 text-xs rounded-md edit-btn">Edit</button>
+                        <button class="bg-red-500 text-white px-2 py-1 text-xs rounded-md delete-btn">Delete</button>
+                    </li>
+                    <li class="event-item">📅 Mid-term exam schedule - 15 June 2023
+                        <button class="bg-yellow-500 text-white px-2 py-1 text-xs rounded-md edit-btn">Edit</button>
+                        <button class="bg-red-500 text-white px-2 py-1 text-xs rounded-md delete-btn">Delete</button>
+                    </li>
+                    <li class="event-item">📅 Inter-school painting competition - 18 May 2023
+                        <button class="bg-yellow-500 text-white px-2 py-1 text-xs rounded-md edit-btn">Edit</button>
+                        <button class="bg-red-500 text-white px-2 py-1 text-xs rounded-md delete-btn">Delete</button>
+                    </li>
+                </ul>
+            </section>
+            
+            <!-- Event Calendar -->
+            <section class="mt-5 bg-white shadow-md p-5 rounded-md">
+                <h3 class="text-gray-600 mb-3">Event Calendar</h3>
+                <p>📅 July 2023</p>
+                <!-- Calendar UI can be added here -->
+            </section>
+        </main>
+    </div>
+
+    <!-- Modal to Add Event -->
+    <div id="eventModal" class="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center hidden">
+        <div class="bg-white p-6 rounded-md shadow-lg w-96">
+            <h3 class="text-xl font-semibold mb-4">Add New Event</h3>
+            <form id="addEventForm">
+                <div class="mb-4">
+                    <label for="eventTitle" class="block text-sm font-medium text-gray-700">Event Title</label>
+                    <input type="text" id="eventTitle" class="mt-1 p-2 w-full border rounded-md" required />
+                </div>
+                <div class="mb-4">
+                    <label for="eventDate" class="block text-sm font-medium text-gray-700">Event Date</label>
+                    <input type="date" id="eventDate" class="mt-1 p-2 w-full border rounded-md" required />
+                </div>
+                <div class="flex justify-between items-center">
+                    <button type="button" class="bg-gray-300 text-black px-4 py-2 rounded-md" id="closeModalBtn">Cancel</button>
+                    <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-md">Add Event</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Elements
+        const addEventBtn = document.getElementById('addEventBtn');
+        const closeModalBtn = document.getElementById('closeModalBtn');
+        const eventModal = document.getElementById('eventModal');
+        const eventsList = document.getElementById('eventsList');
+        const addEventForm = document.getElementById('addEventForm');
+        const eventTitleInput = document.getElementById('eventTitle');
+        const eventDateInput = document.getElementById('eventDate');
+        const searchInput = document.getElementById('searchInput');
+
+        // Open the modal when the "Add Event" button is clicked
+        addEventBtn.addEventListener('click', () => {
+            eventModal.classList.remove('hidden');
+        });
+
+        // Close the modal when the "Cancel" button is clicked
+        closeModalBtn.addEventListener('click', () => {
+            eventModal.classList.add('hidden');
+        });
+
+        // Add the new event to the list when the form is submitted
+        addEventForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const eventTitle = eventTitleInput.value;
+            const eventDate = eventDateInput.value;
+
+            // Validate form inputs
+            if (eventTitle && eventDate) {
+                // Create the new event element
+                const newEvent = document.createElement('li');
+                newEvent.classList.add('event-item');
+                newEvent.textContent = `📅 ${eventTitle} - ${new Date(eventDate).toLocaleDateString()}`;
+                
+                // Create the Edit and Delete buttons
+                const editBtn = document.createElement('button');
+                editBtn.textContent = 'Edit';
+                editBtn.classList.add('bg-yellow-500', 'text-white', 'px-2', 'py-1', 'text-xs', 'rounded-md', 'edit-btn');
+                editBtn.addEventListener('click', () => editEvent(newEvent, eventTitle, eventDate));
+
+                const deleteBtn = document.createElement('button');
+                deleteBtn.textContent = 'Delete';
+                deleteBtn.classList.add('bg-red-500', 'text-white', 'px-2', 'py-1', 'text-xs', 'rounded-md', 'delete-btn');
+                deleteBtn.addEventListener('click', () => deleteEvent(newEvent));
+
+                // Append buttons to the event
+                newEvent.appendChild(editBtn);
+                newEvent.appendChild(deleteBtn);
+
+                // Append the new event to the list
+                eventsList.appendChild(newEvent);
+
+                // Close the modal and reset the form
+                eventModal.classList.add('hidden');
+                addEventForm.reset();
+            } else {
+                alert('Please fill in both the event title and date.');
+            }
+        });
+
+        // Edit Event function
+        function editEvent(eventElement, oldTitle, oldDate) {
+            eventTitleInput.value = oldTitle;
+            eventDateInput.value = oldDate;
+
+            // Remove the event from the list
+            eventsList.removeChild(eventElement);
+            eventModal.classList.remove('hidden');
+        }
+
+        // Delete Event function
+        function deleteEvent(eventElement) {
+            eventsList.removeChild(eventElement);
+        }
+
+        // Search Events functionality
+        searchInput.addEventListener('input', (e) => {
+            const searchQuery = e.target.value.toLowerCase();
+            const eventItems = document.querySelectorAll('.event-item');
+
+            eventItems.forEach(item => {
+                const eventTitle = item.textContent.toLowerCase();
+                if (eventTitle.includes(searchQuery)) {
+                    item.style.display = '';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

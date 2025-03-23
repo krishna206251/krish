@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analytics & Reports</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-gray-100">
+    <div class="flex">
+        <!-- Sidebar -->
+        <aside class="w-64 bg-white shadow-md h-screen p-5">
+            <h1 class="text-xl font-bold flex items-center space-x-2">
+                <span>🎓 Educo</span>
+            </h1>
+            <nav class="mt-5">
+                <ul>
+                    <li class="p-2"><a href="home.html">Dashboard</a></li>
+                    <li class="p-2"><a href="students.html">Students Management</a></li>
+                    <li class="p-2"><a href="teachers.html">Teachers Management</a></li>
+                    <li class="p-2"><a href="exams.html">Exam & Result Management</a></li>
+                    <li class="p-2 bg-blue-500 text-white rounded-md"><a href="analytics.html">Analytics & Reports</a></li>
+                    <li class="p-2"><a href="help.html">Help Center</a></li>
+                    <li class="p-2"><a href="settings.html">Settings</a></li>
+                    <li class="p-2"><a href="logout.html">Logout</a></li>
+                </ul>
+            </nav>
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="flex-1 p-5">
+            <header class="flex justify-between items-center">
+                <h2 class="text-lg font-semibold">Analytics & Reports</h2>
+                <button class="bg-blue-500 text-white px-4 py-2 rounded-md" id="generateReportBtn">Generate Report</button>
+            </header>
+
+            <!-- Analytics Section -->
+            <section class="mt-5 bg-white shadow-md p-5 rounded-md">
+                <h3 class="text-gray-600 mb-3">Exam Performance Analytics</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                    <!-- Total Students Performance Chart -->
+                    <div class="bg-gray-50 p-5 rounded-md shadow">
+                        <h4 class="font-semibold">Total Students Performance</h4>
+                        <canvas id="totalPerformanceChart"></canvas>
+                    </div>
+                    <!-- Subject-wise Performance Chart -->
+                    <div class="bg-gray-50 p-5 rounded-md shadow">
+                        <h4 class="font-semibold">Subject-wise Performance</h4>
+                        <canvas id="subjectPerformanceChart"></canvas>
+                    </div>
+                    <!-- Attendance Analytics Chart -->
+                    <div class="bg-gray-50 p-5 rounded-md shadow">
+                        <h4 class="font-semibold">Attendance Analytics</h4>
+                        <canvas id="attendanceChart"></canvas>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Reports Section -->
+            <section class="mt-5 bg-white shadow-md p-5 rounded-md">
+                <h3 class="text-gray-600 mb-3">Reports</h3>
+                <div class="space-y-4">
+                    <!-- Total Students Report -->
+                    <div class="flex justify-between items-center p-4 bg-gray-50 rounded-md shadow">
+                        <span>Total Students Report</span>
+                        <button class="bg-blue-500 text-white px-4 py-2 rounded-md" onclick="downloadReport('total_students_report')">Download</button>
+                    </div>
+                    <!-- Exam Results Report -->
+                    <div class="flex justify-between items-center p-4 bg-gray-50 rounded-md shadow">
+                        <span>Exam Results Report</span>
+                        <button class="bg-blue-500 text-white px-4 py-2 rounded-md" onclick="downloadReport('exam_results_report')">Download</button>
+                    </div>
+                    <!-- Attendance Report -->
+                    <div class="flex justify-between items-center p-4 bg-gray-50 rounded-md shadow">
+                        <span>Attendance Report</span>
+                        <button class="bg-blue-500 text-white px-4 py-2 rounded-md" onclick="downloadReport('attendance_report')">Download</button>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        // Data for the charts
+        const totalPerformanceData = {
+            labels: ['Passed', 'Failed'],
+            datasets: [{
+                label: 'Exam Performance',
+                data: [80, 20], // Example data
+                backgroundColor: ['#4CAF50', '#F44336'],
+            }]
+        };
+
+        const subjectPerformanceData = {
+            labels: ['Math', 'English', 'Science', 'History', 'Geography'],
+            datasets: [{
+                label: 'Subject Performance',
+                data: [75, 85, 70, 90, 80], // Example data
+                backgroundColor: '#007BFF',
+            }]
+        };
+
+        const attendanceData = {
+            labels: ['Present', 'Absent'],
+            datasets: [{
+                label: 'Attendance',
+                data: [90, 10], // Example data
+                backgroundColor: ['#4CAF50', '#F44336'],
+            }]
+        };
+
+        // Create charts using Chart.js
+        const ctxTotalPerformance = document.getElementById('totalPerformanceChart').getContext('2d');
+        new Chart(ctxTotalPerformance, {
+            type: 'pie',
+            data: totalPerformanceData,
+        });
+
+        const ctxSubjectPerformance = document.getElementById('subjectPerformanceChart').getContext('2d');
+        new Chart(ctxSubjectPerformance, {
+            type: 'bar',
+            data: subjectPerformanceData,
+        });
+
+        const ctxAttendance = document.getElementById('attendanceChart').getContext('2d');
+        new Chart(ctxAttendance, {
+            type: 'doughnut',
+            data: attendanceData,
+        });
+
+        // Button for generating reports (could trigger downloading or processing data)
+        document.getElementById('generateReportBtn').addEventListener('click', function() {
+            alert('Report Generation Process Started!');
+        });
+
+        // Function to trigger report download
+        function downloadReport(reportType) {
+            let reportContent;
+
+            // Determine the content based on report type
+            if (reportType === 'total_students_report') {
+                reportContent = 'Total Students Report: Data on total students...';
+            } else if (reportType === 'exam_results_report') {
+                reportContent = 'Exam Results Report: Data on exam results...';
+            } else if (reportType === 'attendance_report') {
+                reportContent = 'Attendance Report: Data on student attendance...';
+            }
+
+            // Create a Blob with the report content
+            const blob = new Blob([reportContent], { type: 'application/pdf' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `${reportType}.pdf`;
+            link.click();
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teachers Management</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+    <div class="flex">
+        <!-- Sidebar -->
+        <aside class="w-64 bg-white shadow-md h-screen p-5">
+            <h1 class="text-xl font-bold flex items-center space-x-2">
+                <span>🎓 Educo</span>
+            </h1>
+            <nav class="mt-5">
+                <ul>
+                    <li class="p-2"><a href="home.html">Dashboard</a></li>
+                    <li class="p-2"><a href="students.html">Students Management</a></li>
+                    <li class="p-2 bg-blue-500 text-white rounded-md"><a href="teachers.html">Teachers Management</a></li>
+                    <li class="p-2"><a href="exams.html">Exams & Results</a></li>
+                    <li class="p-2"><a href="events.html">Events & Calendar</a></li>
+                    <li class="p-2"><a href="analytics.html">Analytics & Reports</a></li>
+                    <li class="p-2"><a href="help.html">Help Center</a></li>
+                    <li class="p-2"><a href="settings.html">Settings</a></li>
+                    <li class="p-2"><a href="logout.html">Logout</a></li>
+                </ul>
+            </nav>
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="flex-1 p-5">
+            <h2 class="text-lg font-semibold">Teachers Management</h2>
+            
+            <!-- Add Teacher Form -->
+            <div class="p-5 bg-white shadow rounded-md mt-5">
+                <h3 class="text-gray-600">Add New Teacher</h3>
+                <form id="teacherForm" class="mt-3">
+                    <input type="text" id="name" placeholder="Teacher Name" class="border p-2 rounded-md w-full mb-2" required>
+                    <input type="text" id="subject" placeholder="Subject" class="border p-2 rounded-md w-full mb-2" required>
+                    <input type="email" id="email" placeholder="Email" class="border p-2 rounded-md w-full mb-2" required>
+                    <input type="text" id="address" placeholder="Address" class="border p-2 rounded-md w-full mb-2" required>
+                    <input type="text" id="contact" placeholder="Contact No" class="border p-2 rounded-md w-full mb-2" required>
+                    <input type="text" id="degree" placeholder="Degree" class="border p-2 rounded-md w-full mb-2" required>
+                    <input type="number" id="salary" placeholder="Salary" class="border p-2 rounded-md w-full mb-2" required>
+                    <button type="button" onclick="addTeacher()" class="bg-blue-500 text-white p-2 rounded-md">Add Teacher</button>
+                </form>
+            </div>
+            
+            <!-- Teachers Table -->
+            <div class="p-5 bg-white shadow rounded-md mt-5">
+                <h3 class="text-gray-600">Teachers List</h3>
+                <input type="text" id="search" placeholder="Search Teacher..." class="border p-2 rounded-md w-full mb-2" onkeyup="searchTeacher()">
+                <table class="w-full border-collapse mt-3">
+                    <thead>
+                        <tr class="bg-gray-200">
+                            <th class="p-2 border">Name</th>
+                            <th class="p-2 border">Subject</th>
+                            <th class="p-2 border">Email</th>
+                            <th class="p-2 border">Address</th>
+                            <th class="p-2 border">Contact No</th>
+                            <th class="p-2 border">Degree</th>
+                            <th class="p-2 border">Salary</th>
+                            <th class="p-2 border">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="teacherTable"></tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        let teachers = [];
+        
+        function addTeacher() {
+            let name = document.getElementById('name').value;
+            let subject = document.getElementById('subject').value;
+            let email = document.getElementById('email').value;
+            let address = document.getElementById('address').value;
+            let contact = document.getElementById('contact').value;
+            let degree = document.getElementById('degree').value;
+            let salary = document.getElementById('salary').value;
+            
+            if (name && subject && email && address && contact && degree && salary) {
+                teachers.push({ name, subject, email, address, contact, degree, salary });
+                renderTeachers();
+                document.getElementById('teacherForm').reset();
+            }
+        }
+        
+        function renderTeachers() {
+            let table = document.getElementById('teacherTable');
+            table.innerHTML = '';
+            teachers.forEach((teacher, index) => {
+                table.innerHTML += `
+                    <tr>
+                        <td class="p-2 border">${teacher.name}</td>
+                        <td class="p-2 border">${teacher.subject}</td>
+                        <td class="p-2 border">${teacher.email}</td>
+                        <td class="p-2 border">${teacher.address}</td>
+                        <td class="p-2 border">${teacher.contact}</td>
+                        <td class="p-2 border">${teacher.degree}</td>
+                        <td class="p-2 border">$${teacher.salary}</td>
+                        <td class="p-2 border">
+                            <button onclick="deleteTeacher(${index})" class="text-red-500">Delete</button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+        
+        function deleteTeacher(index) {
+            teachers.splice(index, 1);
+            renderTeachers();
+        }
+        
+        function searchTeacher() {
+            let searchValue = document.getElementById('search').value.toLowerCase();
+            let filteredTeachers = teachers.filter(t => t.name.toLowerCase().includes(searchValue));
+            let table = document.getElementById('teacherTable');
+            table.innerHTML = '';
+            filteredTeachers.forEach((teacher, index) => {
+                table.innerHTML += `
+                    <tr>
+                        <td class="p-2 border">${teacher.name}</td>
+                        <td class="p-2 border">${teacher.subject}</td>
+                        <td class="p-2 border">${teacher.email}</td>
+                        <td class="p-2 border">${teacher.address}</td>
+                        <td class="p-2 border">${teacher.contact}</td>
+                        <td class="p-2 border">${teacher.degree}</td>
+                        <td class="p-2 border">$${teacher.salary}</td>
+                        <td class="p-2 border">
+                            <button onclick="deleteTeacher(${index})" class="text-red-500">Delete</button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+    </script>
+</body>
+</html>
