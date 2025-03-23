@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Students Management</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+    <div class="flex">
+        <!-- Sidebar -->
+        <aside class="w-64 bg-white shadow-md h-screen p-5">
+            <h1 class="text-xl font-bold flex items-center space-x-2">
+                <span>🎓 Educo</span>
+            </h1>
+            <nav class="mt-5">
+                <ul>
+                    <li class="p-2"><a href="index.html">Dashboard</a></li>
+                    <li class="p-2 bg-blue-500 text-white rounded-md"><a href="students.html">Students Management</a></li>
+                    <li class="p-2"><a href="teachers.html">Teachers Management</a></li>
+		     <li class="p-2"><a href="exams.html">Exams & Results</a></li>
+                    <li class="p-2"><a href="events.html">Events & Calendar</a></li>
+                    <li class="p-2"><a href="analytics.html">Analytics & Reports</a></li>
+                    <li class="p-2"><a href="help.html">Help Center</a></li>
+                    <li class="p-2"><a href="settings.html">Settings</a></li>
+                    <li class="p-2"><a href="logout.html">Logout</a></li>
+
+                </ul>
+            </nav>
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="flex-1 p-5">
+            <header class="flex justify-between items-center">
+                <h2 class="text-lg font-semibold">Students Management</h2>
+                <input type="text" id="search" placeholder="Search student..." class="border p-2 rounded-md">
+            </header>
+            
+            <!-- Student Form -->
+            <section class="mt-5 bg-white p-5 shadow rounded-md">
+                <h3 class="text-lg font-semibold">Add / Update Student</h3>
+                <form id="studentForm" class="mt-3">
+                    <input type="hidden" id="studentId">
+                    <input type="text" id="name" placeholder="Student Name" class="border p-2 rounded-md w-full mb-2">
+                    <input type="number" id="age" placeholder="Age" class="border p-2 rounded-md w-full mb-2">
+                    <input type="text" id="class" placeholder="Class" class="border p-2 rounded-md w-full mb-2">
+                    <input type="text" id="address" placeholder="Address" class="border p-2 rounded-md w-full mb-2">
+                    <input type="text" id="contact" placeholder="Contact Number" class="border p-2 rounded-md w-full mb-2">
+                    <input type="text" id="parentsName" placeholder="Parents' Name" class="border p-2 rounded-md w-full mb-2">
+                    <button type="submit" class="bg-blue-500 text-white p-2 rounded-md">Save</button>
+                </form>
+            </section>
+            
+            <!-- Student Table -->
+            <section class="mt-5 bg-white p-5 shadow rounded-md">
+                <h3 class="text-lg font-semibold">Student List</h3>
+                <table class="w-full mt-3 border-collapse border border-gray-300">
+                    <thead>
+                        <tr class="bg-gray-200">
+                            <th class="border p-2">Name</th>
+                            <th class="border p-2">Age</th>
+                            <th class="border p-2">Class</th>
+                            <th class="border p-2">Address</th>
+                            <th class="border p-2">Contact No</th>
+                            <th class="border p-2">Parents' Name</th>
+                            <th class="border p-2">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="studentTable"></tbody>
+                </table>
+            </section>
+        </main>
+    </div>
+    
+    <script>
+        const studentForm = document.getElementById('studentForm');
+        const studentTable = document.getElementById('studentTable');
+        const searchInput = document.getElementById('search');
+        let students = [];
+
+        studentForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const id = document.getElementById('studentId').value;
+            const name = document.getElementById('name').value;
+            const age = document.getElementById('age').value;
+            const studentClass = document.getElementById('class').value;
+            const address = document.getElementById('address').value;
+            const contact = document.getElementById('contact').value;
+            const parentsName = document.getElementById('parentsName').value;
+            
+            if (id) {
+                students = students.map(student => student.id === id ? { id, name, age, studentClass, address, contact, parentsName } : student);
+            } else {
+                students.push({ id: Date.now().toString(), name, age, studentClass, address, contact, parentsName });
+            }
+            renderTable();
+            studentForm.reset();
+        });
+        
+        function renderTable() {
+            studentTable.innerHTML = '';
+            students.forEach(student => {
+                const row = `<tr>
+                    <td class="border p-2">${student.name}</td>
+                    <td class="border p-2">${student.age}</td>
+                    <td class="border p-2">${student.studentClass}</td>
+                    <td class="border p-2">${student.address}</td>
+                    <td class="border p-2">${student.contact}</td>
+                    <td class="border p-2">${student.parentsName}</td>
+                    <td class="border p-2">
+                        <button class="bg-green-500 text-white p-1 rounded" onclick="editStudent('${student.id}')">Edit</button>
+                        <button class="bg-red-500 text-white p-1 rounded" onclick="deleteStudent('${student.id}')">Delete</button>
+                    </td>
+                </tr>`;
+                studentTable.innerHTML += row;
+            });
+        }
+
+        function editStudent(id) {
+            const student = students.find(student => student.id === id);
+            document.getElementById('studentId').value = student.id;
+            document.getElementById('name').value = student.name;
+            document.getElementById('age').value = student.age;
+            document.getElementById('class').value = student.studentClass;
+            document.getElementById('address').value = student.address;
+            document.getElementById('contact').value = student.contact;
+            document.getElementById('parentsName').value = student.parentsName;
+        }
+        
+        function deleteStudent(id) {
+            students = students.filter(student => student.id !== id);
+            renderTable();
+        }
+        
+        searchInput.addEventListener('input', function() {
+            const filteredStudents = students.filter(student => student.name.toLowerCase().includes(searchInput.value.toLowerCase()));
+            studentTable.innerHTML = '';
+            filteredStudents.forEach(student => renderTable());
+        });
+    </script>
+</body>
+</html>

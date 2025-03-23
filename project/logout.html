@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logout</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+    <div class="flex items-center justify-center h-screen">
+        <!-- Logout Container -->
+        <div class="bg-white shadow-md rounded-md p-8 w-96 text-center">
+            <h1 class="text-2xl font-semibold text-gray-700">Are you sure you want to log out?</h1>
+            <p class="mt-4 text-gray-500">You will be logged out of your account. Please confirm to proceed.</p>
+
+            <!-- Logout Button Section -->
+            <div class="mt-6 space-x-4">
+                <button id="logoutButton" class="bg-red-500 text-white px-6 py-2 rounded-md hover:bg-red-600">Logout</button>
+                <a href="index.html" class="bg-gray-200 text-gray-800 px-6 py-2 rounded-md hover:bg-gray-300">Cancel</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Logout button action
+        document.getElementById('logoutButton').addEventListener('click', function() {
+            // Simulate a logout action (you could clear session or token here)
+            alert('You have been logged out successfully!');
+
+            // Redirect to login page after logout
+            window.location.href = 'login.html';
+        });
+    </script>
+</body>
+</html>

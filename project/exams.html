@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exam & Result Management</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+    <div class="flex">
+        <!-- Sidebar -->
+        <aside class="w-64 bg-white shadow-md h-screen p-5">
+            <h1 class="text-xl font-bold flex items-center space-x-2">
+                <span>🎓 Educo</span>
+            </h1>
+            <nav class="mt-5">
+                <ul>
+                    <li class="p-2"><a href="index.html">Dashboard</a></li>
+                    <li class="p-2"><a href="students.html">Students Management</a></li>
+                    <li class="p-2"><a href="teachers.html">Teachers Management</a></li>
+                    <li class="p-2"><a href="events.html">Events & Calendar</a></li>
+                    <li class="p-2"><a href="analytics.html">Analytics & Reports</a></li>
+                    <li class="p-2"><a href="help.html">Help Center</a></li>
+                    <li class="p-2"><a href="settings.html">Settings</a></li>
+                    <li class="p-2"><a href="logout.html">Logout</a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 p-5">
+            <header class="flex justify-between items-center">
+                <h2 class="text-lg font-semibold">Exam & Result Management</h2>
+            </header>
+
+            <!-- Data Entry Section -->
+            <section class="mt-5 bg-white shadow-md p-5 rounded-md">
+                <h3 class="text-lg font-semibold mb-3">Add Student Result</h3>
+                <form id="result-form" class="space-y-3">
+                    <div>
+                        <label class="block text-sm font-medium">Student Name:</label>
+                        <input type="text" id="student-name" class="w-full p-2 border rounded-md" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium">Class:</label>
+                        <input type="text" id="student-class" class="w-full p-2 border rounded-md" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium">Roll No:</label>
+                        <input type="text" id="student-roll" class="w-full p-2 border rounded-md" required>
+                    </div>
+                    
+                    <!-- Dynamic Subject Input -->
+                    <div>
+                        <h4 class="text-md font-medium mb-2">Subjects & Marks</h4>
+                        <div id="subject-container"></div>
+                        <button type="button" id="add-subject" class="bg-blue-500 text-white px-3 py-1 rounded-md mt-2">Add Subject</button>
+                    </div>
+                    
+                    <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded-md">Generate Result</button>
+                </form>
+            </section>
+            
+            <!-- Result Display Section -->
+            <section class="mt-5 bg-white shadow-md p-5 rounded-md hidden" id="result-section">
+                <h3 class="text-lg font-semibold mb-3">Student Result</h3>
+                <div class="border p-4 rounded-md shadow-md bg-gray-50">
+                    <p><strong>Student Name:</strong> <span id="display-name"></span></p>
+                    <p><strong>Class:</strong> <span id="display-class"></span></p>
+                    <p><strong>Roll No:</strong> <span id="display-roll"></span></p>
+                </div>
+                
+                <table class="w-full mt-3 border-collapse border border-gray-400">
+                    <thead>
+                        <tr class="bg-gray-200">
+                            <th class="border p-2">Subject</th>
+                            <th class="border p-2">Total Marks</th>
+                            <th class="border p-2">Obtained Marks</th>
+                            <th class="border p-2">Grade</th>
+                            <th class="border p-2">Remarks</th>
+                        </tr>
+                    </thead>
+                    <tbody id="result-table"></tbody>
+                </table>
+                
+                <p class="mt-3"><strong>Total Marks:</strong> <span id="display-total"></span></p>
+                <p><strong>Percentage:</strong> <span id="display-percentage"></span>%</p>
+                <p><strong>Overall Grade:</strong> <span id="display-overall-grade"></span></p>
+                
+                <button id="printResultBtn" class="bg-blue-500 text-white px-4 py-2 rounded-md mt-3">Print Result</button>
+            </section>
+        </main>
+    </div>
+    
+    <script>
+        document.getElementById('add-subject').addEventListener('click', function() {
+            const container = document.getElementById('subject-container');
+            const div = document.createElement('div');
+            div.classList.add('flex', 'space-x-2', 'mb-2');
+            div.innerHTML = `
+                <input type="text" placeholder="Subject Name" class="w-1/3 p-2 border rounded-md" required>
+                <input type="number" placeholder="Total Marks" class="w-1/3 p-2 border rounded-md" required>
+                <input type="number" placeholder="Obtained Marks" class="w-1/3 p-2 border rounded-md" required>
+            `;
+            container.appendChild(div);
+        });
+        
+        document.getElementById('result-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const studentName = document.getElementById('student-name').value;
+            const studentClass = document.getElementById('student-class').value;
+            const studentRoll = document.getElementById('student-roll').value;
+            
+            let totalMarks = 0;
+            let obtainedMarks = 0;
+            let subjectsData = [];
+
+            document.querySelectorAll('#subject-container div').forEach(row => {
+                const subject = row.children[0].value;
+                const total = parseInt(row.children[1].value);
+                const obtained = parseInt(row.children[2].value);
+
+                totalMarks += total;
+                obtainedMarks += obtained;
+
+                let grade = obtained >= 90 ? 'A+' : obtained >= 80 ? 'A' : obtained >= 70 ? 'B' : obtained >= 60 ? 'C' : 'F';
+                let remarks = grade === 'F' ? 'Needs Improvement' : 'Very Good';
+
+                subjectsData.push({ subject, total, obtained, grade, remarks });
+            });
+
+            document.getElementById('display-name').textContent = studentName;
+            document.getElementById('display-class').textContent = studentClass;
+            document.getElementById('display-roll').textContent = studentRoll;
+
+            document.getElementById('result-table').innerHTML = subjectsData.map(item => `
+                <tr>
+                    <td class="border p-2">${item.subject}</td>
+                    <td class="border p-2">${item.total}</td>
+                    <td class="border p-2">${item.obtained}</td>
+                    <td class="border p-2">${item.grade}</td>
+                    <td class="border p-2">${item.remarks}</td>
+                </tr>
+            `).join('');
+
+            document.getElementById('result-section').classList.remove('hidden');
+        });
+
+        document.getElementById('printResultBtn').addEventListener('click', function() {
+            const printContent = `
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <h2>Educo International School</h2>
+                    <p>123 Main Street, City, Country</p>
+                    <p>Date: ${new Date().toLocaleDateString()}</p>
+                </div>
+                ${document.getElementById('result-section').innerHTML}
+            `;
+            document.body.innerHTML = printContent;
+            window.print();
+            location.reload();
+        });
+    </script>
+</body>
+</html>
